@@ -10,19 +10,31 @@ class App extends React.Component {
     super();
     this.state = {
       products: data.products,
-      //by default there is no item in the cart
-      cartItems: [],
+      //make cart item persistent after refreshing the page
+      cartItems: localStorage.getItem("cartItems")
+        ? JSON.parse(localStorage.getItem("cartItems"))
+        : [],
       size: "",
       sort: "",
     };
   }
 
+  createOrder = (order) => {
+    alert("Need to save order for" + order.name);
+  };
+
   //create remove button
+  //after adding new items to the cart we need to update the state
   removeFromCart = (product) => {
     const cartItems = this.state.cartItems.slice();
     this.setState({
       cartItems: cartItems.filter((x) => x._id !== product._id),
     });
+    //make cart item persistent after refreshing the page
+    localStorage.setItem(
+      "cartItems",
+      JSON.stringify(cartItems.filter((x) => x._id !== product._id))
+    );
   };
 
   // create add to cart function
@@ -38,8 +50,11 @@ class App extends React.Component {
     if (!alreadyInCart) {
       cartItems.push({ ...product, count: 1 });
     }
-    //after adding new items to the cart we need to update the state
+
     this.setState({ cartItems });
+    //make cart item persistent after refreshing the page
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
   };
 
   //clone functions sort method
@@ -104,6 +119,7 @@ class App extends React.Component {
               <Cart
                 cartItems={this.state.cartItems}
                 removeFromCart={this.removeFromCart}
+                createOrder={this.createOrder}
               />
             </div>
           </div>
